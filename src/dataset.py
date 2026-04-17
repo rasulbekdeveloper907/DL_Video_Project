@@ -1,11 +1,14 @@
 import torch
 from pathlib import Path
-
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 from utils import IMAGE_SIZE, MEAN, STD, TEST_DIR, TRAIN_DIR, VAL_DIR
+
+
+# 🎯 FIXED CLASSES (IMPORTANT)
+CLASSES = ["sitting", "standing"]
 
 
 def get_train_frame_transform():
@@ -27,27 +30,34 @@ def get_eval_frame_transform():
 
 class VideoSequenceDataset(Dataset):
     """
-    One sample is one folder containing ordered frames.
-    Sample tensor shape: [T, C, H, W]
+    One sample = one sequence folder
+    Shape: [T, C, H, W]
     """
 
     def __init__(self, root_dir: Path, transform=None):
         self.root_dir = Path(root_dir)
         self.transform = transform
         self.samples = []
-        self.class_names = []
 
-        for class_dir in sorted(self.root_dir.iterdir()):
-            if not class_dir.is_dir():
-                continue
-            self.class_names.append(class_dir.name)
+        # ✅ FIXED CLASS ORDER (no auto-sorting bugs)
+        self.class_names = CLASSES
+        self.class_to_index = {c: i for i, c in enumerate(self.class_names)}
 
-        class_to_index = {class_name: index for index, class_name in enumerate(self.class_names)}
-
+        # load dataset
         for class_name in self.class_names:
-            for sequence_dir in sorted((self.root_dir / class_name).iterdir()):
+            class_path = self.root_dir / class_name
+
+            if not class_path.exists():
+                print(f"⚠️ Warning: Missing folder {class_path}")
+                continue
+
+            for sequence_dir in sorted(class_path.iterdir()):
                 if sequence_dir.is_dir():
-                    self.samples.append((sequence_dir, class_to_index[class_name]))
+                    self.samples.append(
+                        (sequence_dir, self.class_to_index[class_name])
+                    )
+
+        print(f"✅ Loaded {len(self.samples)} samples from {self.root_dir}")
 
     def __len__(self):
         return len(self.samples)
@@ -57,13 +67,23 @@ class VideoSequenceDataset(Dataset):
         frame_paths = sorted(sequence_dir.glob("*.jpg"))
 
         frames = []
+
         for frame_path in frame_paths:
             image = Image.open(frame_path).convert("RGB")
-            frame_tensor = self.transform(image) if self.transform else image
+
+            if self.transform:
+                frame_tensor = self.transform(image)
+            else:
+                frame_tensor = transforms.ToTensor()(image)
+
             frames.append(frame_tensor)
 
+        # safety check
+        if len(frames) == 0:
+            raise ValueError(f"No frames found in {sequence_dir}")
+
         sequence_tensor = torch.stack(frames, dim=0)
-        # Shape is [T, C, H, W], for example [8, 3, 128, 128].
+
         return sequence_tensor, label
 
 
@@ -76,7 +96,10 @@ def create_dataloaders(batch_size: int = 2):
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
+    # 🔍 debug info
     sample_sequences, sample_labels = next(iter(train_loader))
+
+    print("\n📊 DATASET INFO")
     print(f"Sample sequence shape: {sample_sequences.shape}")
     print(f"Sample label shape: {sample_labels.shape}")
     print("Class names:", train_dataset.class_names)
