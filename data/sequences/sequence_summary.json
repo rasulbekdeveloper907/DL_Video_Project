@@ -1,0 +1,14 @@
+{
+    "sitting": {
+        "total": 8,
+        "train": 5,
+        "val": 1,
+        "test": 2
+    },
+    "standing": {
+        "total": 8,
+        "train": 5,
+        "val": 1,
+        "test": 2
+    }
+}

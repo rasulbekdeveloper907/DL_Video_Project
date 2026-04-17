@@ -4,30 +4,40 @@ from sklearn.metrics import accuracy_score
 
 from dataset import create_dataloaders
 from model import SimpleVideoCNN
-from utils import MODELS_DIR, PLOTS_DIR, get_device, load_json, plot_confusion_matrix
+from utils import (
+    MODELS_DIR,
+    PLOTS_DIR,
+    get_device,
+    load_json,
+    plot_confusion_matrix
+)
 
 
 def main():
     device = get_device()
     print("Using device:", device)
 
-    # 📦 dataset
+    # 📦 Load dataset
     _, _, test_loader, _ = create_dataloaders(batch_size=2)
 
-    # 📂 load class names
-    class_names = load_json(MODELS_DIR / "class_names.json")
+    if len(test_loader.dataset) == 0:
+        raise ValueError("❌ Test dataset is empty! Check prepare_sequences.py")
 
+    # 📂 Load class names
+    class_names_path = MODELS_DIR / "class_names.json"
+    if not class_names_path.exists():
+        raise FileNotFoundError(f"❌ Missing class names: {class_names_path}")
+
+    class_names = load_json(class_names_path)
     print("Classes:", class_names)
 
-    # 🧠 model
-    model = SimpleVideoCNN(num_classes=len(class_names)).to(device)
-
+    # 🧠 Load model
     model_path = MODELS_DIR / "best_video_model.pth"
+    if not model_path.exists():
+        raise FileNotFoundError(f"❌ Model not found: {model_path}")
 
-    model.load_state_dict(
-        torch.load(model_path, map_location=device)
-    )
-
+    model = SimpleVideoCNN(num_classes=len(class_names)).to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
     criterion = nn.CrossEntropyLoss()
@@ -53,18 +63,18 @@ def main():
             total_loss += loss.item() * batch_size
             total_samples += batch_size
 
-            all_labels.extend(labels.cpu().tolist())
-            all_predictions.extend(preds.cpu().tolist())
+            all_labels.extend(labels.cpu().numpy().tolist())
+            all_predictions.extend(preds.cpu().numpy().tolist())
 
-    # 📊 metrics
-    test_loss = total_loss / total_samples
+    # 📊 Metrics
+    test_loss = total_loss / total_samples if total_samples > 0 else 0
     test_accuracy = accuracy_score(all_labels, all_predictions)
 
     print("\n📊 TEST RESULTS")
     print(f"Loss: {test_loss:.4f}")
     print(f"Accuracy: {test_accuracy:.4f}")
 
-    # 📉 confusion matrix
+    # 📉 Confusion matrix
     confusion_matrix_path = PLOTS_DIR / "confusion_matrix.png"
 
     plot_confusion_matrix(
@@ -74,7 +84,7 @@ def main():
         confusion_matrix_path
     )
 
-    print("Saved confusion matrix to:", confusion_matrix_path)
+    print("📁 Saved confusion matrix to:", confusion_matrix_path)
 
 
 if __name__ == "__main__":

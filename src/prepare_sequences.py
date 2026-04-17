@@ -1,5 +1,6 @@
 import random
 import shutil
+from pathlib import Path
 
 from utils import (
     CLASS_NAMES,
@@ -17,110 +18,99 @@ from utils import (
 )
 
 
-# 📦 copy frames into sequence folder
-def copy_sequence_frames(source_frame_paths, destination_dir):
-    destination_dir.mkdir(parents=True, exist_ok=True)
-
-    for i, frame_path in enumerate(source_frame_paths):
-        shutil.copy2(frame_path, destination_dir / f"frame_{i:02d}.jpg")
+def safe_copytree(src: Path, dst: Path):
+    if dst.exists():
+        shutil.rmtree(dst)
+    shutil.copytree(src, dst)
 
 
-# ✂️ dataset split
+def copy_sequence_frames(frame_paths, dest_dir):
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    for i, fp in enumerate(frame_paths):
+        shutil.copy2(fp, dest_dir / f"frame_{i:02d}.jpg")
+
+
 def split_list(items, train_ratio=0.7, val_ratio=0.15):
-    total = len(items)
-
-    if total < 3:
+    if len(items) < 3:
         return items, [], []
 
-    train_count = int(total * train_ratio)
-    val_count = int(total * val_ratio)
+    random.shuffle(items)
 
-    # safety fix
-    train_count = max(1, train_count)
-    val_count = max(1, val_count)
+    train_end = int(len(items) * train_ratio)
+    val_end = train_end + int(len(items) * val_ratio)
 
-    if train_count + val_count >= total:
-        val_count = max(1, total - train_count - 1)
+    train = items[:train_end]
+    val = items[train_end:val_end]
+    test = items[val_end:]
 
-    train_items = items[:train_count]
-    val_items = items[train_count:train_count + val_count]
-    test_items = items[train_count + val_count:]
+    if len(val) == 0 and len(train) > 1:
+        val.append(train.pop())
 
-    # ensure no empty split
-    if len(test_items) == 0 and len(val_items) > 0:
-        test_items = [val_items.pop()]
+    if len(test) == 0 and len(val) > 1:
+        test.append(val.pop())
 
-    if len(val_items) == 0 and len(train_items) > 1:
-        val_items = [train_items.pop()]
-
-    return train_items, val_items, test_items
+    return train, val, test
 
 
 def main():
     set_seed(42)
 
-    # 📁 check extracted frames
     if not EXTRACTED_FRAMES_DIR.exists():
-        raise FileNotFoundError(
-            f"No extracted frames found in {EXTRACTED_FRAMES_DIR}. "
-            "Run extract_frames.py first."
-        )
+        raise FileNotFoundError("Run extract_frames.py first")
 
-    # 🧹 reset output dirs
-    for folder in [SEQUENCES_DIR, TRAIN_DIR, VAL_DIR, TEST_DIR]:
-        reset_directory(folder)
+    for d in [SEQUENCES_DIR, TRAIN_DIR, VAL_DIR, TEST_DIR]:
+        reset_directory(d)
 
     summary = {}
 
-    # 🔁 loop over classes
     for class_name in CLASS_NAMES:
 
-        class_frame_dirs = sorted((EXTRACTED_FRAMES_DIR / class_name).glob("*"))
-        random.shuffle(class_frame_dirs)
+        video_dirs = list((EXTRACTED_FRAMES_DIR / class_name).glob("*"))
+        random.shuffle(video_dirs)
 
-        created_sequences = []
+        sequences = []
 
-        for video_dir in class_frame_dirs:
+        for vdir in video_dirs:
+            frames = sorted(vdir.glob("*.jpg"))
 
-            frame_paths = sorted(video_dir.glob("*.jpg"))
+            # ✔ skip too short videos safely
+            if len(frames) < SEQUENCE_LENGTH:
+                continue
 
-            if len(frame_paths) < SEQUENCE_LENGTH:
-                continue  # skip too short videos
+            indices = sample_frame_indices(len(frames), SEQUENCE_LENGTH)
+            selected = [frames[i] for i in indices]
 
-            indices = sample_frame_indices(len(frame_paths), SEQUENCE_LENGTH)
-            selected_frames = [frame_paths[i] for i in indices]
+            seq_dir = SEQUENCES_DIR / class_name / vdir.name
+            copy_sequence_frames(selected, seq_dir)
 
-            sequence_dir = SEQUENCES_DIR / class_name / video_dir.name
+            sequences.append(seq_dir)
 
-            copy_sequence_frames(selected_frames, sequence_dir)
+        train, val, test = split_list(sequences)
 
-            created_sequences.append(sequence_dir)
+        for s in train:
+            safe_copytree(s, TRAIN_DIR / class_name / s.name)
 
-        # ✂️ split dataset
-        train_sequences, val_sequences, test_sequences = split_list(created_sequences)
+        for s in val:
+            safe_copytree(s, VAL_DIR / class_name / s.name)
 
-        # 📦 copy into train/val/test
-        for seq in train_sequences:
-            shutil.copytree(seq, TRAIN_DIR / class_name / seq.name)
-
-        for seq in val_sequences:
-            shutil.copytree(seq, VAL_DIR / class_name / seq.name)
-
-        for seq in test_sequences:
-            shutil.copytree(seq, TEST_DIR / class_name / seq.name)
+        for s in test:
+            safe_copytree(s, TEST_DIR / class_name / s.name)
 
         summary[class_name] = {
-            "total_sequences": len(created_sequences),
-            "train": len(train_sequences),
-            "val": len(val_sequences),
-            "test": len(test_sequences),
+            "total": len(sequences),
+            "train": len(train),
+            "val": len(val),
+            "test": len(test),
         }
 
-    # 💾 save summary
     save_json(summary, SEQUENCES_DIR / "sequence_summary.json")
 
-    print("\n✅ Sequence preparation complete!\n")
+    print("\n✅ DONE")
+    print("Train:", count_items_per_class(TRAIN_DIR))
+    print("Val:", count_items_per_class(VAL_DIR))
+    print("Test:", count_items_per_class(TEST_DIR))
 
-    print("📊 Train:", count_items_per_class(TRAIN_DIR))
-    print("📊 Val:", count_items_per_class(VAL_DIR))
-    print("📊 Test:", count_items_per_class(TEST_DIR))
+
+if __name__ == "__main__":
+    main()

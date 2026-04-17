@@ -5,12 +5,11 @@ from utils import EXTRACTED_FRAMES_DIR, RAW_VIDEOS_DIR, reset_directory, save_js
 
 
 def extract_all_frames(video_path: Path, output_dir: Path):
-    """Extract all frames from a video file."""
-    
+
     capture = cv2.VideoCapture(str(video_path))
 
     if not capture.isOpened():
-        print(f"⚠️ Could not open video: {video_path}")
+        print(f"❌ Could not open video: {video_path}")
         return 0
 
     frame_index = 0
@@ -18,62 +17,60 @@ def extract_all_frames(video_path: Path, output_dir: Path):
 
     while True:
         success, frame = capture.read()
+
         if not success:
             break
 
-        # 🧼 safety check (avoid empty frames)
+        # 🧼 safe check
         if frame is None:
+            frame_index += 1
             continue
 
         output_path = output_dir / f"frame_{frame_index:04d}.jpg"
 
-        # save frame
         cv2.imwrite(str(output_path), frame)
 
         frame_index += 1
         saved_count += 1
 
     capture.release()
+
     return saved_count
 
 
 def main():
-    # 📦 get all videos
+
     video_paths = sorted(RAW_VIDEOS_DIR.glob("*/*.*"))
 
     if not video_paths:
-        raise FileNotFoundError(
-            f"No videos found in {RAW_VIDEOS_DIR}. Run download_videos.py first."
-        )
+        raise FileNotFoundError("Run download_videos.py first")
 
-    # 🧹 reset frames folder
     reset_directory(EXTRACTED_FRAMES_DIR)
 
     summary = []
 
     for video_path in video_paths:
 
-        class_name = video_path.parent.name  # sitting / standing
+        class_name = video_path.parent.name
         video_name = video_path.stem
 
         output_dir = EXTRACTED_FRAMES_DIR / class_name / video_name
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        saved_count = extract_all_frames(video_path, output_dir)
+        saved = extract_all_frames(video_path, output_dir)
+
+        print(f"✅ {class_name}/{video_name}: {saved} frames")
 
         summary.append({
             "class_name": class_name,
             "video_name": video_name,
-            "frames_saved": saved_count,
+            "frames_saved": saved,
         })
 
-        print(f"✅ Extracted {saved_count} frames from {video_path.name}")
-
-    # 💾 save metadata
     save_json(summary, EXTRACTED_FRAMES_DIR / "frame_extraction_summary.json")
 
-    print("\n📄 Saved extraction summary to:",
-          EXTRACTED_FRAMES_DIR / "frame_extraction_summary.json")
+    print("\n✅ DONE")
+    print("📁 Frames saved to:", EXTRACTED_FRAMES_DIR)
 
 
 if __name__ == "__main__":
