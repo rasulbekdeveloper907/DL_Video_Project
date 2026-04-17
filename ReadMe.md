@@ -21,8 +21,8 @@ The project teaches the full workflow:
 
 The default classes are:
 
-- `walking`
-- `running`
+- `sitting`
+- `standing`
 
 The preferred public download is attempted first. If downloading fails, the project automatically creates a tiny synthetic motion dataset using OpenCV so the whole pipeline still works on CPU.
 
@@ -79,8 +79,8 @@ video_dl_project/
 
 If internet access is unavailable or the download fails, the script creates short synthetic videos:
 
-- `walking` videos have slower stick-figure movement
-- `running` videos have faster stick-figure movement
+- `sitting` videos have slower stick-figure movement
+- `standing` videos have faster stick-figure movement
 
 This fallback is helpful for teaching because the whole pipeline remains runnable.
 
@@ -212,7 +212,7 @@ python src/predict.py
 You can also predict on a specific video:
 
 ```bash
-python src/predict.py --video_path data/raw_videos/walking/walking_00.mp4
+python src/predict.py --video_path data/raw_videos/sitting/sitting_00.mp4
 ```
 
 ## Outputs
