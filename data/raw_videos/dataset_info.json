@@ -1,0 +1,14 @@
+{
+    "source": "public_download",
+    "classes": [
+        "sitting",
+        "standing"
+    ],
+    "videos": [
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_00.avi",
+            "url": "https://github.com/opencv/opencv/raw/master/samples/data/vtest.avi"
+        }
+    ]
+}
