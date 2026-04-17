@@ -5,8 +5,7 @@ from pathlib import Path
 from utils import CLASS_NAMES, RAW_VIDEOS_DIR, ensure_directories, save_json, set_seed
 
 
-# 🧠 INTERNET O‘CHIRILGAN (STABLE VERSION)
-# Biz faqat synthetic dataset ishlatamiz
+
 
 
 def create_synthetic_motion_video(
@@ -29,12 +28,12 @@ def create_synthetic_motion_video(
     for i in range(num_frames):
         frame = np.full((height, width, 3), background, dtype=np.uint8)
 
-        # 🎯 sitting = slightly unstable posture
+       
         if motion_type == "sitting":
             dx = np.random.randint(-2, 3)
             dy = np.random.randint(-1, 2)
 
-        # 🎯 standing = stable but natural camera noise
+        
         else:
             dx = np.random.randint(-1, 2)
             dy = np.random.randint(-1, 2)
@@ -42,7 +41,7 @@ def create_synthetic_motion_video(
         x = base_x + dx
         y = base_y + dy
 
-        # 👤 stick figure
+        
         cv2.circle(frame, (x, y - 18), 10, color, -1)
         cv2.line(frame, (x, y - 8), (x, y + 20), color, 3)
         cv2.line(frame, (x, y), (x - 10, y + 12), color, 3)
@@ -97,15 +96,15 @@ def main():
     set_seed(42)
     ensure_directories()
 
-    print("🚀 Creating synthetic dataset (sitting vs standing)...")
+    print("Creating synthetic dataset (sitting vs standing)...")
 
     metadata = create_dataset(videos_per_class=8)
 
     save_json(metadata, RAW_VIDEOS_DIR / "dataset_info.json")
 
-    print("\n✅ DONE!")
-    print("📁 Dataset saved to:", RAW_VIDEOS_DIR)
-    print("📄 Metadata:", RAW_VIDEOS_DIR / "dataset_info.json")
+    print("\n DONE!")
+    print(" Dataset saved to:", RAW_VIDEOS_DIR)
+    print(" Metadata:", RAW_VIDEOS_DIR / "dataset_info.json")
 
 
 if __name__ == "__main__":

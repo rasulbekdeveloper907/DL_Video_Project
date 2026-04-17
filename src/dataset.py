@@ -7,7 +7,6 @@ from torchvision import transforms
 from utils import IMAGE_SIZE, MEAN, STD, TEST_DIR, TRAIN_DIR, VAL_DIR
 
 
-# 🎯 FIXED CLASSES (IMPORTANT)
 CLASSES = ["sitting", "standing"]
 
 
@@ -39,7 +38,7 @@ class VideoSequenceDataset(Dataset):
         self.transform = transform
         self.samples = []
 
-        # ✅ FIXED CLASS ORDER (no auto-sorting bugs)
+        
         self.class_names = CLASSES
         self.class_to_index = {c: i for i, c in enumerate(self.class_names)}
 
@@ -48,7 +47,7 @@ class VideoSequenceDataset(Dataset):
             class_path = self.root_dir / class_name
 
             if not class_path.exists():
-                print(f"⚠️ Warning: Missing folder {class_path}")
+                print(f"Warning: Missing folder {class_path}")
                 continue
 
             for sequence_dir in sorted(class_path.iterdir()):
@@ -57,7 +56,7 @@ class VideoSequenceDataset(Dataset):
                         (sequence_dir, self.class_to_index[class_name])
                     )
 
-        print(f"✅ Loaded {len(self.samples)} samples from {self.root_dir}")
+        print(f"Loaded {len(self.samples)} samples from {self.root_dir}")
 
     def __len__(self):
         return len(self.samples)
@@ -78,7 +77,7 @@ class VideoSequenceDataset(Dataset):
 
             frames.append(frame_tensor)
 
-        # safety check
+        
         if len(frames) == 0:
             raise ValueError(f"No frames found in {sequence_dir}")
 
@@ -96,10 +95,10 @@ def create_dataloaders(batch_size: int = 2):
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    # 🔍 debug info
+    
     sample_sequences, sample_labels = next(iter(train_loader))
 
-    print("\n📊 DATASET INFO")
+    print("\nDATASET INFO")
     print(f"Sample sequence shape: {sample_sequences.shape}")
     print(f"Sample label shape: {sample_labels.shape}")
     print("Class names:", train_dataset.class_names)

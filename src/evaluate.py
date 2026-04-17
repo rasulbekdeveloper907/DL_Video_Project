@@ -17,24 +17,24 @@ def main():
     device = get_device()
     print("Using device:", device)
 
-    # 📦 Load dataset
+   
     _, _, test_loader, _ = create_dataloaders(batch_size=2)
 
     if len(test_loader.dataset) == 0:
-        raise ValueError("❌ Test dataset is empty! Check prepare_sequences.py")
+        raise ValueError(" Test dataset is empty! Check prepare_sequences.py")
 
-    # 📂 Load class names
+    
     class_names_path = MODELS_DIR / "class_names.json"
     if not class_names_path.exists():
-        raise FileNotFoundError(f"❌ Missing class names: {class_names_path}")
+        raise FileNotFoundError(f" Missing class names: {class_names_path}")
 
     class_names = load_json(class_names_path)
     print("Classes:", class_names)
 
-    # 🧠 Load model
+    
     model_path = MODELS_DIR / "best_video_model.pth"
     if not model_path.exists():
-        raise FileNotFoundError(f"❌ Model not found: {model_path}")
+        raise FileNotFoundError(f" Model not found: {model_path}")
 
     model = SimpleVideoCNN(num_classes=len(class_names)).to(device)
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -66,15 +66,15 @@ def main():
             all_labels.extend(labels.cpu().numpy().tolist())
             all_predictions.extend(preds.cpu().numpy().tolist())
 
-    # 📊 Metrics
+    
     test_loss = total_loss / total_samples if total_samples > 0 else 0
     test_accuracy = accuracy_score(all_labels, all_predictions)
 
-    print("\n📊 TEST RESULTS")
+    print("\n TEST RESULTS")
     print(f"Loss: {test_loss:.4f}")
     print(f"Accuracy: {test_accuracy:.4f}")
 
-    # 📉 Confusion matrix
+    
     confusion_matrix_path = PLOTS_DIR / "confusion_matrix.png"
 
     plot_confusion_matrix(
@@ -84,7 +84,7 @@ def main():
         confusion_matrix_path
     )
 
-    print("📁 Saved confusion matrix to:", confusion_matrix_path)
+    print(" Saved confusion matrix to:", confusion_matrix_path)
 
 
 if __name__ == "__main__":

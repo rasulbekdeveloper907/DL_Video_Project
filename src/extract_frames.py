@@ -9,7 +9,7 @@ def extract_all_frames(video_path: Path, output_dir: Path):
     capture = cv2.VideoCapture(str(video_path))
 
     if not capture.isOpened():
-        print(f"❌ Could not open video: {video_path}")
+        print(f"Could not open video: {video_path}")
         return 0
 
     frame_index = 0
@@ -21,7 +21,7 @@ def extract_all_frames(video_path: Path, output_dir: Path):
         if not success:
             break
 
-        # 🧼 safe check
+        
         if frame is None:
             frame_index += 1
             continue
@@ -59,7 +59,7 @@ def main():
 
         saved = extract_all_frames(video_path, output_dir)
 
-        print(f"✅ {class_name}/{video_name}: {saved} frames")
+        print(f" {class_name}/{video_name}: {saved} frames")
 
         summary.append({
             "class_name": class_name,
@@ -69,8 +69,8 @@ def main():
 
     save_json(summary, EXTRACTED_FRAMES_DIR / "frame_extraction_summary.json")
 
-    print("\n✅ DONE")
-    print("📁 Frames saved to:", EXTRACTED_FRAMES_DIR)
+    print("\n DONE")
+    print(" Frames saved to:", EXTRACTED_FRAMES_DIR)
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ from utils import (
 )
 
 
-# 🧼 frame preprocessing
+
 def build_frame_transform():
     return transforms.Compose([
         transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
@@ -31,7 +31,7 @@ def build_frame_transform():
     ])
 
 
-# 🎥 load video → fixed sequence tensor
+
 def load_video_as_sequence(video_path: Path):
     capture = cv2.VideoCapture(str(video_path))
 
@@ -63,7 +63,7 @@ def load_video_as_sequence(video_path: Path):
 
     capture.release()
 
-    # 🧠 safety: if not enough frames → duplicate last frame
+
     if len(frames) == 0:
         raise ValueError("No frames extracted from video")
 
@@ -75,7 +75,7 @@ def load_video_as_sequence(video_path: Path):
     return torch.stack(frames, dim=0)
 
 
-# 📦 default video
+
 def get_default_video():
     video_paths = sorted(RAW_VIDEOS_DIR.glob("*/*.*"))
 
@@ -87,7 +87,7 @@ def get_default_video():
     return video_paths[0]
 
 
-# 🖼 preview save
+
 def save_prediction_preview(video_path: Path, predicted_class: str, confidence: float):
     capture = cv2.VideoCapture(str(video_path))
     success, frame = capture.read()
@@ -112,7 +112,7 @@ def save_prediction_preview(video_path: Path, predicted_class: str, confidence: 
     save_path = PREDICTIONS_DIR / f"prediction_{video_path.stem}.jpg"
     cv2.imwrite(str(save_path), frame)
 
-    print("📸 Saved prediction preview:", save_path)
+    print("Saved prediction preview:", save_path)
 
 
 def main():
@@ -122,16 +122,16 @@ def main():
 
     video_path = Path(args.video_path) if args.video_path else get_default_video()
 
-    print("\n🎥 Using video:", video_path)
-    print("ℹ️ Info:", get_video_info(video_path))
+    print("\n Using video:", video_path)
+    print("Info:", get_video_info(video_path))
 
     device = get_device()
 
-    # 📂 load class names
-    class_names = load_json(MODELS_DIR / "class_names.json")
-    print("📦 Classes:", class_names)
 
-    # 🧠 model
+    class_names = load_json(MODELS_DIR / "class_names.json")
+    print(" Classes:", class_names)
+
+  
     model = SimpleVideoCNN(num_classes=len(class_names)).to(device)
 
     model.load_state_dict(
@@ -140,9 +140,9 @@ def main():
 
     model.eval()
 
-    # 🎞 prepare input
+
     sequence = load_video_as_sequence(video_path)
-    sequence = sequence.unsqueeze(0).to(device)  # [1, T, C, H, W]
+    sequence = sequence.unsqueeze(0).to(device)  
 
     with torch.no_grad():
         outputs = model(sequence)
@@ -153,8 +153,8 @@ def main():
     predicted_class = class_names[pred_idx.item()]
     confidence_value = confidence.item()
 
-    # 📊 result
-    print("\n📊 PREDICTION RESULT")
+  
+    print("\nPREDICTION RESULT")
     print("Class:", predicted_class)
     print(f"Confidence: {confidence_value:.4f}")
 

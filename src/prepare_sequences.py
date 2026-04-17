@@ -74,7 +74,7 @@ def main():
         for vdir in video_dirs:
             frames = sorted(vdir.glob("*.jpg"))
 
-            # ✔ skip too short videos safely
+            
             if len(frames) < SEQUENCE_LENGTH:
                 continue
 
@@ -106,7 +106,7 @@ def main():
 
     save_json(summary, SEQUENCES_DIR / "sequence_summary.json")
 
-    print("\n✅ DONE")
+    print("\n DONE")
     print("Train:", count_items_per_class(TRAIN_DIR))
     print("Val:", count_items_per_class(VAL_DIR))
     print("Test:", count_items_per_class(TEST_DIR))

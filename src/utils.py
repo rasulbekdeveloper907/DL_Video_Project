@@ -10,7 +10,7 @@ import torch
 from sklearn.metrics import ConfusionMatrixDisplay
 
 
-# 📁 ROOT PATHS
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 DATA_DIR = PROJECT_ROOT / "data"
@@ -28,7 +28,7 @@ PLOTS_DIR = OUTPUTS_DIR / "plots"
 PREDICTIONS_DIR = OUTPUTS_DIR / "predictions"
 
 
-# 🎯 FIXED CLASSES (SITTING / STANDING)
+
 CLASS_NAMES = ["sitting", "standing"]
 
 IMAGE_SIZE = 128
@@ -38,7 +38,7 @@ MEAN = (0.5, 0.5, 0.5)
 STD = (0.5, 0.5, 0.5)
 
 
-# 📦 create folders
+
 def ensure_directories():
     for folder in [
         RAW_VIDEOS_DIR,
@@ -54,26 +54,25 @@ def ensure_directories():
         folder.mkdir(parents=True, exist_ok=True)
 
 
-# 🧹 reset folder
+
 def reset_directory(path: Path):
     if path.exists():
         shutil.rmtree(path)
     path.mkdir(parents=True, exist_ok=True)
 
 
-# 🔒 reproducibility
+
 def set_seed(seed: int = 42):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
 
 
-# 💻 device (CPU only project)
 def get_device():
     return torch.device("cpu")
 
 
-# 💾 JSON helpers
+
 def save_json(data, path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -85,7 +84,7 @@ def load_json(path: Path):
         return json.load(f)
 
 
-# 🎥 video info
+
 def get_video_info(video_path: Path):
     cap = cv2.VideoCapture(str(video_path))
 
@@ -104,7 +103,7 @@ def get_video_info(video_path: Path):
     return info
 
 
-# 🎞 frame sampling
+
 def sample_frame_indices(total_frames: int, sequence_length: int):
     if total_frames <= 0:
         return [0] * sequence_length
@@ -118,7 +117,7 @@ def sample_frame_indices(total_frames: int, sequence_length: int):
     return np.linspace(0, total_frames - 1, sequence_length, dtype=int).tolist()
 
 
-# 📊 dataset stats
+
 def count_items_per_class(root_dir: Path):
     counts = {}
 
@@ -132,13 +131,13 @@ def count_items_per_class(root_dir: Path):
     return counts
 
 
-# 📈 training plot
+
 def plot_training_history(history: dict, save_path: Path):
     epochs = range(1, len(history["train_loss"]) + 1)
 
     plt.figure(figsize=(12, 5))
 
-    # loss
+
     plt.subplot(1, 2, 1)
     plt.plot(epochs, history["train_loss"], label="Train Loss")
     plt.plot(epochs, history["val_loss"], label="Val Loss")
@@ -147,7 +146,7 @@ def plot_training_history(history: dict, save_path: Path):
     plt.ylabel("Loss")
     plt.legend()
 
-    # accuracy
+
     plt.subplot(1, 2, 2)
     plt.plot(epochs, history["train_acc"], label="Train Acc")
     plt.plot(epochs, history["val_acc"], label="Val Acc")
@@ -162,7 +161,7 @@ def plot_training_history(history: dict, save_path: Path):
     plt.close()
 
 
-# 📉 confusion matrix
+
 def plot_confusion_matrix(y_true, y_pred, class_names, save_path: Path):
     plt.figure(figsize=(6, 6))
 
