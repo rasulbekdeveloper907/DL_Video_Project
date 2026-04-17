@@ -3,5 +3,85 @@
         "class_name": "sitting",
         "video_name": "sitting_00",
         "frames_saved": 795
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_00",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_01",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_02",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_03",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_04",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_05",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_06",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "sitting",
+        "video_name": "sitting_07",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_00",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_01",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_02",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_03",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_04",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_05",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_06",
+        "frames_saved": 24
+    },
+    {
+        "class_name": "standing",
+        "video_name": "standing_07",
+        "frames_saved": 24
     }
 ]

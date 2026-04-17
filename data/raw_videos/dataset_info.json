@@ -1,5 +1,5 @@
 {
-    "source": "mixed",
+    "source": "synthetic_only",
     "classes": [
         "sitting",
         "standing"
@@ -7,8 +7,67 @@
     "videos": [
         {
             "class_name": "sitting",
-            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_00.avi",
-            "url": "https://github.com/opencv/opencv/raw/master/samples/data/vtest.avi"
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_00.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_01.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_02.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_03.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_04.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_05.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_06.mp4"
+        },
+        {
+            "class_name": "sitting",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\sitting\\sitting_07.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_00.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_01.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_02.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_03.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_04.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_05.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_06.mp4"
+        },
+        {
+            "class_name": "standing",
+            "path": "C:\\Users\\Rasulbekk\\Desktop\\DL_Video_Project\\data\\raw_videos\\standing\\standing_07.mp4"
         }
     ]
 }
